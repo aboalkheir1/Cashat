@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar">
+	<head>
+		<meta charset="UTF-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<title>محفظة إلكترونية</title>
+		<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet" />
+		<style type="text/css">
+body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form {
+            margin: 20px 0;
+        }
+        input {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 90%;
+            margin: 10px auto;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .result p {
+            margin: 10px 0;
+            color: #333;
+        }
+        .result p.error {
+            color: red;
+        }
+        .result p.success {
+            color: green;
+        }		</style>
+	</head>
+	<body style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">
+		<div class="container">
+			<h1>
+				<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">المحفظة الالكترونية - تحويل السؤال</font></font></font></font></h1>
+			<form id="transfer-form">
+				<input id="sender-code" placeholder="كود العميل المرسل" required="" type="text" /> <input id="receiver-transfer-code" placeholder="كود تحويل العميل المستقبل" required="" type="text" /> <input id="amount" placeholder="المكعبة التحويله" required="" type="number" /><button type="submit"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">تنفيذ التحويل</font></font></font></font></button></form>
+			<div class="result" id="result">
+				 </div>
+		</div>
+		<script>
+        (function () {
+            // رابط API الخاص بـ Google Apps Script
+            const apiUrl = "https://script.google.com/macros/s/AKfycbzqg1eYiq-lPkIjqCasGkup90fLW3znoRDaessjAHZAp5_rUrGRefsQ_llyuK3Sphcx/exec";
+
+            // التأكد من أن المتصفح يدعم fetch
+            if (!window.fetch) {
+                alert("المتصفح الخاص بك قديم جدًا ولا يدعم بعض الميزات. يرجى تحديث المتصفح.");
+                return;
+            }
+
+            // التعامل مع نموذج التحويل
+            document.getElementById("transfer-form").addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                const senderCode = document.getElementById("sender-code").value.trim();
+                const receiverTransferCode = document.getElementById("receiver-transfer-code").value.trim();
+                const amount = parseFloat(document.getElementById("amount").value.trim());
+                const resultDiv = document.getElementById("result");
+
+                // التحقق من المدخلات
+                if (!senderCode || !receiverTransferCode || isNaN(amount) || amount <= 0) {
+                    resultDiv.innerHTML = "<p class='error'>يرجى إدخال جميع البيانات بشكل صحيح.</p>";
+                    return;
+                }
+
+                // التحقق من أن كود المرسل ليس نفس كود التحويل
+                if (senderCode === receiverTransferCode) {
+                    resultDiv.innerHTML = "<p class='error'>لا يمكن تحويل الأموال لنفس الحساب.</p>";
+                    return;
+                }
+
+                // إظهار تعليمات التحويل
+                const confirmation = confirm("هل أنت متأكد أنك تريد تنفيذ هذا التحويل؟ لا يمكنك التراجع بعد الضغط على موافق.");
+                if (!confirmation) {
+                    resultDiv.innerHTML = "<p class='error'>تم إلغاء عملية التحويل.</p>";
+                    return;
+                }
+
+                // إرسال البيانات إلى API
+                fetch(apiUrl, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "transfer",
+                        senderCode: senderCode,
+                        receiverTransferCode: receiverTransferCode,
+                        amount: amount
+                    }),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("خطأ في الاتصال بالخادم.");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            resultDiv.innerHTML = `
+                                <p class='success'>${data.message}</p>
+                                <p>الرصيد الجديد للمرسل: ${data.senderNewBalance} ج.م</p>
+                            `;
+                        } else {
+                            resultDiv.innerHTML = `<p class='error'>${data.message}</p>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        resultDiv.innerHTML = "<p class='error'>حدث خطأ أثناء معالجة العملية.</p>";
+                    });
+            });
+        })();
+    </script></body>
+</html>
