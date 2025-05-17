@@ -1,158 +1,389 @@
 <!DOCTYPE html>
-<html lang="ar">
-	<head>
-		<meta charset="UTF-8" />
-		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
-		<title>محفظة إلكترونية</title>
-		<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet" />
-		<style type="text/css">
-body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #f4f4f9;
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أسعار معاملات محفظة كاشات</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --text: #2b2d42;
+            --bg: #f8f9fa;
+        }
+        
+        * {
             margin: 0;
             padding: 0;
-            text-align: center;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
         .container {
-            max-width: 400px;
-            margin: 50px auto;
-            background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
         }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
         h1 {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 20px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
         }
-        form {
-            margin: 20px 0;
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text);
+            opacity: 0.8;
         }
-        input {
-            display: block;
-            width: 90%;
-            margin: 10px auto;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+        
+        .refresh-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
         }
-        button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #007BFF;
+        
+        .last-update {
+            font-size: 0.9rem;
+            color: var(--text);
+            opacity: 0.7;
+        }
+        
+        .refresh-btn {
+            background-color: var(--primary);
             color: white;
-            border-radius: 5px;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
             cursor: pointer;
-            font-size: 16px;
-            width: 90%;
-            margin: 10px auto;
+            font-family: 'Rubik', sans-serif;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        button:hover {
-            background-color: #0056b3;
+        
+        .refresh-btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
-        .result {
-            margin-top: 20px;
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: left;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
-        .result p {
-            margin: 10px 0;
-            color: #333;
+        
+        .price-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
-        .result p.error {
-            color: red;
+        
+        .price-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        .result p.success {
-            color: green;
-        }		</style>
-	</head>
-	<body style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">
-		<div class="container">
-			<h1>
-				<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">المحفظة الالكترونية - تحويل السؤال</font></font></font></font></h1>
-			<form id="transfer-form">
-				<input id="sender-code" placeholder="كود العميل المرسل" required="" type="text" /> <input id="receiver-transfer-code" placeholder="كود تحويل العميل المستقبل" required="" type="text" /> <input id="amount" placeholder="المكعبة التحويله" required="" type="number" /><button type="submit"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">تنفيذ التحويل</font></font></font></font></button></form>
-			<div class="result" id="result">
-				 </div>
-		</div>
-		<script>
-        (function () {
-            // رابط API الخاص بـ Google Apps Script
-            const apiUrl = "https://script.google.com/macros/s/AKfycbzqg1eYiq-lPkIjqCasGkup90fLW3znoRDaessjAHZAp5_rUrGRefsQ_llyuK3Sphcx/exec";
-
-            // التأكد من أن المتصفح يدعم fetch
-            if (!window.fetch) {
-                alert("المتصفح الخاص بك قديم جدًا ولا يدعم بعض الميزات. يرجى تحديث المتصفح.");
-                return;
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .buy .card-icon {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .sell .card-icon {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+        
+        .exchange .card-icon {
+            background-color: rgba(72, 149, 239, 0.1);
+            color: var(--accent);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .card-price {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+        
+        .price-change {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .price-up {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+        
+        .price-down {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+        
+        .price-neutral {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: var(--text);
+            opacity: 0.7;
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
             }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <i class="fas fa-wallet"></i> أسعار معاملات محفظة كاشات
+            </h1>
+            <p class="subtitle">أحدث الأسعار المحدثة لحظيًا لجميع المعاملات</p>
+        </header>
+        
+        <div class="refresh-container">
+            <div class="last-update" id="lastUpdate">
+                آخر تحديث: جاري التحميل...
+            </div>
+            <button class="refresh-btn" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> تحديث البيانات
+            </button>
+        </div>
+        
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner"></i> جاري تحميل البيانات...
+        </div>
+        
+        <div id="cardsContainer" class="cards-container" style="display: none;">
+            <!-- سيتم إضافة البطاقات هنا عبر JavaScript -->
+        </div>
+    </div>
 
-            // التعامل مع نموذج التحويل
-            document.getElementById("transfer-form").addEventListener("submit", function (event) {
-                event.preventDefault();
-
-                const senderCode = document.getElementById("sender-code").value.trim();
-                const receiverTransferCode = document.getElementById("receiver-transfer-code").value.trim();
-                const amount = parseFloat(document.getElementById("amount").value.trim());
-                const resultDiv = document.getElementById("result");
-
-                // التحقق من المدخلات
-                if (!senderCode || !receiverTransferCode || isNaN(amount) || amount <= 0) {
-                    resultDiv.innerHTML = "<p class='error'>يرجى إدخال جميع البيانات بشكل صحيح.</p>";
-                    return;
-                }
-
-                // التحقق من أن كود المرسل ليس نفس كود التحويل
-                if (senderCode === receiverTransferCode) {
-                    resultDiv.innerHTML = "<p class='error'>لا يمكن تحويل الأموال لنفس الحساب.</p>";
-                    return;
-                }
-
-                // إظهار تعليمات التحويل
-                const confirmation = confirm("هل أنت متأكد أنك تريد تنفيذ هذا التحويل؟ لا يمكنك التراجع بعد الضغط على موافق.");
-                if (!confirmation) {
-                    resultDiv.innerHTML = "<p class='error'>تم إلغاء عملية التحويل.</p>";
-                    return;
-                }
-
-                // إرسال البيانات إلى API
-                fetch(apiUrl, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        action: "transfer",
-                        senderCode: senderCode,
-                        receiverTransferCode: receiverTransferCode,
-                        amount: amount
-                    }),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("خطأ في الاتصال بالخادم.");
-                        }
-                        return response.json();
-                    })
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const spreadsheetId = '10m_9tTVdfT-03CbKhLErpL7dLaSbvqL6OvEa8Md8Y7I';
+            const apiKey = 'AIzaSyA2sfEmgxR2pnjnMQEEMe9PpgsY1o4K50M';
+            const range = 'تسعيرة!A1:Z';
+            
+            const refreshBtn = document.getElementById('refreshBtn');
+            const lastUpdateEl = document.getElementById('lastUpdate');
+            const loadingEl = document.getElementById('loading');
+            const cardsContainer = document.getElementById('cardsContainer');
+            
+            // تحميل البيانات عند تحميل الصفحة
+            fetchData();
+            
+            // إضافة حدث النقر على زر التحديث
+            refreshBtn.addEventListener('click', fetchData);
+            
+            function fetchData() {
+                loadingEl.style.display = 'block';
+                cardsContainer.style.display = 'none';
+                
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
+                
+                fetch(url)
+                    .then(response => response.json())
                     .then(data => {
-                        if (data.success) {
-                            resultDiv.innerHTML = `
-                                <p class='success'>${data.message}</p>
-                                <p>الرصيد الجديد للمرسل: ${data.senderNewBalance} ج.م</p>
-                            `;
-                        } else {
-                            resultDiv.innerHTML = `<p class='error'>${data.message}</p>`;
-                        }
+                        processData(data.values);
+                        lastUpdateEl.textContent = `آخر تحديث: ${new Date().toLocaleString('ar-EG')}`;
+                        loadingEl.style.display = 'none';
+                        cardsContainer.style.display = 'grid';
                     })
                     .catch(error => {
-                        console.error("Error:", error);
-                        resultDiv.innerHTML = "<p class='error'>حدث خطأ أثناء معالجة العملية.</p>";
+                        console.error('Error fetching data:', error);
+                        loadingEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> حدث خطأ أثناء جلب البيانات. يرجى المحاولة مرة أخرى.`;
                     });
-            });
-        })();
-    </script></body>
+            }
+            
+            function processData(data) {
+                if (!data || data.length < 2) {
+                    console.error('No data or insufficient rows');
+                    return;
+                }
+                
+                // مسح البطاقات السابقة
+                cardsContainer.innerHTML = '';
+                
+                // العناوين (الصف الأول)
+                const headers = data[0];
+                // الأسعار (الصف الثاني)
+                const prices = data[1];
+                
+                // إنشاء بطاقة لكل عمود
+                headers.forEach((header, index) => {
+                    if (index === 0) return; // نتخطى العمود الأول إذا كان فارغًا أو غير ضروري
+                    
+                    const price = prices[index];
+                    if (!price || price.trim() === '') return; // نتخطى إذا كانت القيمة فارغة
+                    
+                    const card = document.createElement('div');
+                    
+                    // تحديد نوع البطاقة بناء على العنوان
+                    if (header.includes('شراء')) {
+                        card.className = 'price-card buy';
+                        card.innerHTML = `
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="card-title">${header}</div>
+                            </div>
+                            <div class="card-price">${formatPrice(price)}</div>
+                            <div class="price-change ${getPriceChangeClass(price, index)}">
+                                ${getChangeValue(price, index)}
+                            </div>
+                        `;
+                    } 
+                    else if (header.includes('بيع')) {
+                        card.className = 'price-card sell';
+                        card.innerHTML = `
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-cash-register"></i>
+                                </div>
+                                <div class="card-title">${header}</div>
+                            </div>
+                            <div class="card-price">${formatPrice(price)}</div>
+                            <div class="price-change ${getPriceChangeClass(price, index)}">
+                                ${getChangeValue(price, index)}
+                            </div>
+                        `;
+                    } 
+                    else {
+                        card.className = 'price-card exchange';
+                        card.innerHTML = `
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <div class="card-title">${header}</div>
+                            </div>
+                            <div class="card-price">${formatPrice(price)}</div>
+                            <div class="price-change ${getPriceChangeClass(price, index)}">
+                                ${getChangeValue(price, index)}
+                            </div>
+                        `;
+                    }
+                    
+                    cardsContainer.appendChild(card);
+                });
+            }
+            
+            // تنسيق السعر
+            function formatPrice(price) {
+                const num = parseFloat(price);
+                if (isNaN(num)) return price;
+                return num.toFixed(2);
+            }
+            
+            // تحديد لون السهم بناء على قيمة السعر وموقعه في المصفوفة
+            function getPriceChangeClass(price, index) {
+                const num = parseFloat(price);
+                if (isNaN(num)) return 'price-neutral';
+                
+                // يمكن استبدال هذا المنطق بمنطق حقيقي إذا كانت لديك بيانات التغيير
+                if (index % 3 === 0) return 'price-up';
+                if (index % 4 === 0) return 'price-down';
+                return 'price-neutral';
+            }
+            
+            // توليد قيمة تغيير (يمكن استبدالها ببيانات حقيقية إذا كانت متوفرة)
+            function getChangeValue(price, index) {
+                const num = parseFloat(price);
+                if (isNaN(num)) return '→ 0.0%';
+                
+                // يمكن استبدال هذا المنطق بمنطق حقيقي إذا كانت لديك بيانات التغيير
+                const changes = [
+                    `↑ ${(Math.random() * 2).toFixed(1)}%`,
+                    `↓ ${(Math.random() * 1.5).toFixed(1)}%`,
+                    `→ 0.0%`
+                ];
+                return changes[index % changes.length];
+            }
+        });
+    </script>
+</body>
 </html>
